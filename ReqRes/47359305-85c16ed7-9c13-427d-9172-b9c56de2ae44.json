@@ -1,0 +1,837 @@
+{
+	"info": {
+		"_postman_id": "47359305-85c16ed7-9c13-427d-9172-b9c56de2ae44",
+		"name": "ReqRes.in",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f41c0d0e-4201-4a61-9854-25e49f232782",
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct Page Name\", function () {\r",
+							"    pm.expect(jsonData.page).to.eql(2);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct Entries per Page\", function () {\r",
+							"    pm.expect(jsonData.per_page).to.eql(6);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total numeber of entries\", function () {\r",
+							"    pm.expect(jsonData.total).to.eql(12);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total numeber of pages\", function () {\r",
+							"    pm.expect(jsonData.total_pages).to.eql(2);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check data\", function () {\r",
+							"    pm.expect(jsonData.data[0].id).to.eql(7);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Find George if exist\", function () {\r",
+							"    const dataArray = jsonData.data; // Fixed reference to jsonData\r",
+							"    let georgeExist = false;\r",
+							"\r",
+							"    for (let i = 0; i < dataArray.length; i++){\r",
+							"        if (dataArray[i].first_name === \"George\"){\r",
+							"            georgeExist = true;\r",
+							"            break;\r",
+							"        }\r",
+							"    }\r",
+							"    pm.expect(georgeExist).to.be.true;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-724abfc8-8acf-49a8-b6bb-69ab9132aa66",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/users?page=2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List a Single User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3f356889-baff-4e81-b6af-94644a7d2191",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json(); // Parse the response body as JSON\r",
+							"\r",
+							"// Test for Content-Type header\r",
+							"pm.test(\"Content-Type is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"// Test for the presence of data object\r",
+							"pm.test(\"Response has data object\", function () {\r",
+							"    pm.expect(response).to.have.property(\"data\");\r",
+							"});\r",
+							"\r",
+							"// Test for the structure of the data object\r",
+							"pm.test(\"Data object has required properties\", function () {\r",
+							"    pm.expect(response.data).to.have.all.keys(\"id\", \"email\", \"first_name\", \"last_name\", \"avatar\");\r",
+							"});\r",
+							"\r",
+							"// Test for the presence of support object\r",
+							"pm.test(\"Response has support object\", function () {\r",
+							"    pm.expect(response).to.have.property(\"support\");\r",
+							"});\r",
+							"\r",
+							"// Test for the structure of the support object\r",
+							"pm.test(\"Support object has required properties\", function () {\r",
+							"    pm.expect(response.support).to.have.all.keys(\"url\", \"text\");\r",
+							"});\r",
+							"\r",
+							"const userX = pm.environment.get(\"userID\"); // Get the userID from environment variables\r",
+							"pm.test(\"Correct User Fetched\", function () {\r",
+							"    pm.expect(response.data.id).to.eql(\"userX\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ff66f3e3-c16d-49d2-8e2b-a3a57ce864e4",
+						"exec": [
+							"const randomValue = Math.floor(Math.random() * 12) + 1;\r",
+							"pm.environment.set(\"userID\", randomValue);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-08b3cb87-2953-4e14-909f-ebe64e4be819",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/users/{{userID}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"{{userID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Single user not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "137bba2c-4663-4724-b7b6-64e296e793ac",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is empty for 404 status\", function () {\r",
+							"    pm.expect(pm.response.json()).to.be.an('object').that.is.empty;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-2586ba47-f69b-41dc-8d8d-f367e9e0c46a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/users/23",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"23"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List a Single Resource",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0dc921d2-4be9-4f88-95a6-712e1d7eb99e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-002bd8c2-202f-4827-bc13-f882f15849fb",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/unknown/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"unknown",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List All Resources",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "66a4bda6-7867-4bb2-9923-54c480d4dbc8",
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct Page Name\", function () {\r",
+							"    pm.expect(jsonData.page).to.eql(1);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct Entries per Page\", function () {\r",
+							"    pm.expect(jsonData.per_page).to.eql(6);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total numeber of entries\", function () {\r",
+							"    pm.expect(jsonData.total).to.eql(12);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total numeber of pages\", function () {\r",
+							"    pm.expect(jsonData.total_pages).to.eql(2);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check data\", function () {\r",
+							"    pm.expect(jsonData.data[0].id).to.eql(1);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Cerulean Exist!\", function () {\r",
+							"    const dataArray = jsonData.data; // Fixed reference to jsonData\r",
+							"    let ceruleanExist = false;\r",
+							"\r",
+							"    for (let i = 0; i < dataArray.length; i++){\r",
+							"        if (dataArray[i].name === \"cerulean\"){\r",
+							"            ceruleanExist = true;\r",
+							"            break;\r",
+							"        }\r",
+							"    }\r",
+							"    pm.expect(ceruleanExist).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-4acc37dc-c0e9-4ed4-9344-eda73e9d2b5a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/unknown",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"unknown"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List a Resource Not Found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8ff2d36b-86e5-49b2-a18f-a58622b1a58e",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-ff023d53-15d7-4bf6-a938-a8ecdcc4435f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/unknown/23",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"unknown",
+						"23"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "451fb75d-a097-4913-9263-31e84ba77763",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"//wrong response, will add tests when request passes"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-c4e9164d-6dbb-4ea4-abc9-6c749f77c3bf",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"morpheus\",\r\n    \"job\": \"leader\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c4747683-107f-4c7c-8523-f532eae55861",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//wrong response, will add tests when request passes"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-b5170ed8-e350-4aa2-aedc-7ed579b95922",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"morpheus\",\r\n    \"job\": \"zion resident\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/users/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User (Patch)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4ac7dc2c-15be-460c-9854-7727da46ef37",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-1bcf692f-5528-441d-b97d-50634d4b2b8d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"morpheus\",\r\n    \"job\": \"zion resident\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/users/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "16c7ce56-5b49-494f-9e7a-bda5ea2d2c3b",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-985ac041-ff33-45a8-9d50-b5e4c8d9a575",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/users/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registration Successful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0f6d048c-1afa-4b18-b667-72e8cb28f781",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-1e35703a-845f-4da7-9840-1e83b9d40c0d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"eve.holt@reqres.in\",\r\n    \"password\": \"pistol\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registration Unsuccessful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "108e2b3d-4290-4471-9dfa-70694c610abf",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-bc91c8f7-34ea-4ae7-95e6-6fd1909a72d1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"sydney@fife\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Successful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f1889809-795b-4ace-9aa2-6e4f8c0df8a8",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-15e73e50-8292-490b-8e70-55f7e56abebc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"eve.holt@reqres.in\",\r\n    \"password\": \"cityslicka\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Unsuccessful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d24136c7-06d5-4683-aca0-6c155b649857",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-29879b0f-c813-4cfd-8dbe-94c846fa211c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"peter@klaven\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delayed Response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1fcdf511-06db-4b11-9467-b586bf5cb0ed",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "47359305-f8171762-834d-449a-8bd9-7b3f76d953bf",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/users?delay=3",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "delay",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "10c9a7da-c45b-445e-bf7d-12fe9a67840a",
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "29cdbd6f-097a-4668-b0ba-ad5c5c711f61",
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"pm.test(\"Response time is less than 1000ms\", function () {\r",
+					"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+					"});"
+				]
+			}
+		}
+	]
+}
